@@ -2,6 +2,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-typescript');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-connect');
+    grunt.loadNpmTasks('grunt-wiredep');
     grunt.loadNpmTasks('grunt-open');
  
     grunt.initConfig({
@@ -10,14 +11,14 @@ module.exports = function (grunt) {
             server: {
                 options: {
                     port: 8080,
-                    base: './public/'
+                    base: './'
                 }
             }
         },
         typescript: {
             base: {
                 src: ['src/**/*.ts'],
-                dest: 'public/js/main.js',
+                dest: 'js/main.js',
                 options: {
                     module: 'amd',
                     target: 'es5'
@@ -42,6 +43,14 @@ module.exports = function (grunt) {
         open: {
             dev: {
                 path: 'http://localhost:8080/index.html'
+            }
+        },
+        wiredep: {
+            target: {
+                src: ['index.html'],
+                options: {
+                    dependencies: true
+                }
             }
         }
     });
