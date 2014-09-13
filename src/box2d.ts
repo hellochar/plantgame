@@ -15,3 +15,48 @@ var b2Vec2 = Box2D.Common.Math.b2Vec2
 ,   b2DebugDraw = Box2D.Dynamics.b2DebugDraw
 ;
 
+interface b2Vec2 {
+    x: number;
+    y: number;
+
+Abs():void
+
+Add(v:b2Vec2):void
+
+Copy():b2Vec2
+
+CrossFV(s:number):void
+
+CrossVF(s:number):void
+
+GetNegative():b2Vec2
+
+IsValid():boolean
+
+Length():number
+
+LengthSquared():number
+
+MaxV(b:b2Vec2):void
+
+MinV(b:b2Vec2):void
+
+MulM(A:any):void
+
+Multiply(a:number):void
+
+MulTM(A:any):void
+
+NegativeSelf():void
+
+Normalize():number
+
+Set(x_:number, y_:number):void
+
+SetV(v:b2Vec2):void
+
+SetZero():void
+
+Subtract(v:b2Vec2):void
+
+}

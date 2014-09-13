@@ -14,6 +14,7 @@
     "tests"
   ],
   "dependencies": {
-    "jquery": "~2.1.1"
+    "jquery": "~2.1.1",
+    "box-2d-web": "~2.1.3"
   }
 }
