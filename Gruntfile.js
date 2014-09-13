@@ -25,8 +25,19 @@ module.exports = function (grunt) {
             }
         },
         watch: {
-            files: '**/*.ts',
-            tasks: ['typescript']
+            ts: {
+                files: '**/*.ts',
+                tasks: ['typescript'],
+                options: {
+                    livereload: true
+                }
+            },
+            htmlAndCss: {
+                files: ['**/*.html', '**/*.css'],
+                options: {
+                    livereload: true
+                },
+            }
         },
         open: {
             dev: {
