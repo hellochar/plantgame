@@ -61,7 +61,7 @@ module.exports = function (grunt) {
           dist: {
             files: [
               {src: 'index.html', dest: 'dist/index.html'},
-              {src: '**/*.css', dest: 'dist/'}
+              {src: 'style.css', dest: 'dist/style.css'}
             ]
           }
         },

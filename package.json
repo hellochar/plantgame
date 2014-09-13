@@ -6,7 +6,10 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
-    "deploy": "grunt dist && git push origin heroku"
+    "deploy": "grunt dist && git push heroku master"
+  },
+  "engines": {
+    "node": "0.10.x"
   },
   "author": "",
   "license": "ISC",
