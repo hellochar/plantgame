@@ -21,11 +21,16 @@ module.exports = function (grunt) {
         },
         typescript: {
             base: {
-                src: ['src/**/*.ts'],
+                src: ['src/box2d.ts',
+                      'src/embox2d-helpers.ts',
+                      'src/embox2d-html5canvas-debugDraw.ts',
+                      'src/main.ts'
+                     ],
                 dest: 'js/main.js',
                 options: {
                     module: 'amd',
-                    target: 'es5'
+                    target: 'es5',
+                    basePath: 'src',
                 }
             }
         },
@@ -46,7 +51,7 @@ module.exports = function (grunt) {
         },
         open: {
             dev: {
-                path: 'http://localhost:8080/index.html'
+                path: 'http://localhost:8080'
             }
         },
         wiredep: {
