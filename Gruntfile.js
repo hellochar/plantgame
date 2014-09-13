@@ -4,13 +4,17 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-connect');
     grunt.loadNpmTasks('grunt-wiredep');
     grunt.loadNpmTasks('grunt-open');
- 
+    grunt.loadNpmTasks('grunt-contrib-uglify');
+    grunt.loadNpmTasks('grunt-contrib-copy');
+    grunt.loadNpmTasks('grunt-contrib-concat');
+    grunt.loadNpmTasks('grunt-usemin');
+
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
         connect: {
             server: {
                 options: {
-                    port: 8080,
+                    port: process.env.PORT || 8080,
                     base: './'
                 }
             }
@@ -52,10 +56,30 @@ module.exports = function (grunt) {
                     dependencies: true
                 }
             }
+        },
+        copy: {
+          dist: {
+            files: [
+              {src: 'index.html', dest: 'dist/index.html'},
+              {src: '**/*.css', dest: 'dist/'}
+            ]
+          }
+        },
+
+        'useminPrepare': {
+          options: {
+            dest: 'dist'
+          },
+          html: 'index.html'
+        },
+
+        usemin: {
+          html: ['dist/index.html']
         }
     });
  
     grunt.registerTask('default', ['connect', 'open', 'watch']);
+    grunt.registerTask('dist', ['wiredep', 'useminPrepare', 'copy', 'concat', 'usemin']);
  
 }
 
