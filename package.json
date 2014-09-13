@@ -4,11 +4,16 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "deploy": "grunt dist && git push origin heroku"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "express": "~4.9.0",
+    "morgan": "~1.3.0",
+    "errorhandler": "~1.2.0"
   },
   "devDependencies": {
     "grunt-usemin": "~2.4.0",
