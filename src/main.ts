@@ -1,41 +1,57 @@
 /// <reference path="../typings/jquery/jquery.d.ts"/>
 /// <reference path="box2d.ts"/>
-/// <reference path="embox2d-html5canvas-debugDraw.ts"/>
+//
+var canvas = document.createElement("canvas");
+canvas.width = $(window).width();
+canvas.height = $(window).height();
 
-var gravity = new Box2D.b2Vec2(0.0, 10.0);
+document.body.appendChild(canvas);
+var context = canvas.getContext("2d");
 
-var world = new Box2D.b2World(gravity);
+var clickables = [];
 
-var bd_ground = new Box2D.b2BodyDef();
-var ground = world.CreateBody(bd_ground);
+var world = new b2World(
+   new b2Vec2(0, 10)    //gravity
+,  true                 //allow sleep
+);
 
-var shape0 = new Box2D.b2EdgeShape();
-shape0.Set(new Box2D.b2Vec2(0, 600), new Box2D.b2Vec2(1000, 600));
-ground.CreateFixture(shape0, 0.0);
+var fixDef = new b2FixtureDef;
+fixDef.density = 1.0;
+fixDef.friction = 0.5;
+fixDef.restitution = 0.2;
 
-var size = 1;
-var shape = new Box2D.b2PolygonShape();
-shape.SetAsBox(size, size);
+var bodyDef = new b2BodyDef;
 
-var bd = new Box2D.b2BodyDef();
-bd.set_type(Box2D.b2_dynamicBody);
-bd.set_position(new Box2D.b2Vec2(500, 0));
-var body = world.CreateBody(bd);
-body.CreateFixture(shape, 5.0);
+//create ground
+bodyDef.type = b2Body.b2_staticBody;
+fixDef.shape = new b2PolygonShape;
+fixDef.shape.SetAsBox(100, 2);
+bodyDef.position.Set(50, 800 / 30);
+var floor = world.CreateBody(bodyDef).CreateFixture(fixDef);
 
+//create a seed
+bodyDef.type = b2Body.b2_staticBody;
+fixDef.shape = new b2CircleShape(.3);
+
+bodyDef.position.x = canvas.width / 2 / 30
+bodyDef.position.y = 800 / 30 - 2;
+var seed = world.CreateBody(bodyDef).CreateFixture(fixDef);
+clickables.push(seed);
 
 function update(timestamp) {
-    world.Step(1/30, 3, 3);
-
+    world.Step(1/60, 3, 3);
+    world.DrawDebugData();
     requestAnimationFrame(update);
 }
 
 requestAnimationFrame(update);
 
-var canvas = document.createElement("canvas");
-document.body.appendChild(canvas);
-var context = canvas.getContext("2d");
-
-var debugDraw = DebugDraw.setup(context);
-debugDraw.SetFlags(e_shapeBit);
+//setup debug draw
+var debugDraw = new b2DebugDraw();
+debugDraw.SetSprite(context);
+debugDraw.SetDrawScale(30.0);
+debugDraw.SetFillAlpha(0.5);
+debugDraw.SetLineThickness(1.0);
+debugDraw.SetFlags(b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit);
 world.SetDebugDraw(debugDraw);
+

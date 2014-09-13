@@ -22,8 +22,6 @@ module.exports = function (grunt) {
         typescript: {
             base: {
                 src: ['src/box2d.ts',
-                      'src/embox2d-helpers.ts',
-                      'src/embox2d-html5canvas-debugDraw.ts',
                       'src/main.ts'
                      ],
                 dest: 'js/main.js',
