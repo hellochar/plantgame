@@ -10,6 +10,7 @@ var context = canvas.getContext("2d");
 
 // an array of clickable bodies. You can create from any point on these bodies.
 var clickables = [];
+var joints = [];
 
 var world = new b2World(
    new b2Vec2(0, 10)    //gravity
@@ -42,6 +43,12 @@ seed.CreateFixture(fixDef);
 clickables.push(seed);
 
 function update(timestamp) {
+    joints.forEach((joint) => {
+        // console.log(joint);
+        joint.SetMaxMotorTorque(10 + 1000 * Math.abs(joint.GetJointAngle()));
+        // debugger
+    });
+    console.log(joints.map((joint) => joint.GetJointAngle()));
     world.Step(1/60, 3, 3);
     world.DrawDebugData();
 
@@ -118,10 +125,18 @@ $(document).on("click", (e) => {
             var jointDef = new b2Joints.b2RevoluteJointDef;
             jointDef.Initialize(clickedBody, body, clickedPoint);
             // jointDef.referenceAngle = bodyDef.angle;
-            jointDef.enableLimit = true;
-            jointDef.lowerAngle = -.1
-            jointDef.upperAngle = .1
-            world.CreateJoint(jointDef);
+            jointDef.enableMotor = true;
+            jointDef.motorSpeed = 0;
+            jointDef.maxMotorTorque = 100;
+            var joint = world.CreateJoint(jointDef);
+
+            joints.push(joint);
+
+            // var prismaticJointDef = new b2Joints.b2PrismaticJointDef;
+            // var direction = offset.Copy();
+            // direction.Normalize();
+            // prismaticJointDef.Initialize(clickedBody, body, clickedPoint, offset);
+            // world.CreateJoint(prismaticJointDef);
 
             clickedPoint = null;
             clickedBody = null;
