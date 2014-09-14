@@ -18,6 +18,8 @@ var BRANCH_RATIO = 31 / 310;
 
 var BREAKING_ANGLE = Math.PI / 2;
 
+var tallest = 0;
+
 var canvas = document.createElement("canvas");
 canvas.width = $(window).width();
 canvas.height = $(window).height();
@@ -151,6 +153,7 @@ function update(timestamp) {
     $("#height").text((height/10).toFixed(2) + " ft.").css({
         bottom: (height * DRAW_SCALE + 50).toFixed(0)
     });
+    tallest = Math.max(tallest, height);
 
     (() => {
         context.save();
@@ -182,6 +185,15 @@ function update(timestamp) {
         context.arc(clickedPoint.x * DRAW_SCALE, clickedPoint.y * DRAW_SCALE, length * DRAW_SCALE, 0, Math.PI*2);
         context.stroke();
     }
+
+    context.strokeStyle = "white";
+    context.lineWidth = 2;
+    context.beginPath();
+    var yPixel = (canvas.height) - tallest * DRAW_SCALE;
+    context.moveTo(0, yPixel);
+    context.lineTo(canvas.width, yPixel);
+    context.stroke();
+
     requestAnimationFrame(update);
 }
 
