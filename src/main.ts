@@ -77,6 +77,7 @@ $(document).on("mousemove mousedown mouseup click", (e) => {
 });
 
 var clickedPoint: b2Vec2;
+var clickedBody: any;
 
 $(document).on("click", (e) => {
     if(clickedPoint == null) {
@@ -88,6 +89,7 @@ $(document).on("click", (e) => {
             if(fixture.TestPoint(mouseWorldVec.Copy())) {
                 console.log("got it!");
                 clickedPoint = mouseWorldVec.Copy();
+                clickedBody = body;
             }
         });
     } else {
@@ -99,8 +101,11 @@ $(document).on("click", (e) => {
             var length = offset.Length();
             var bodyDef = new b2BodyDef;
             var fixDef = new b2FixtureDef;
+            fixDef.density = 1.0;
+            fixDef.friction = 0.5;
+            fixDef.restitution = 0.2;
 
-            bodyDef.type = b2Body.b2_staticBody;
+            bodyDef.type = b2Body.b2_dynamicBody;
             bodyDef.position.SetV(midpoint);
             bodyDef.angle = Math.atan2(offset.y, offset.x);
             fixDef.shape = new b2PolygonShape;
@@ -110,7 +115,16 @@ $(document).on("click", (e) => {
             body.CreateFixture(fixDef);
             clickables.push(body);
 
+            var jointDef = new b2Joints.b2RevoluteJointDef;
+            jointDef.Initialize(clickedBody, body, clickedPoint);
+            // jointDef.referenceAngle = bodyDef.angle;
+            jointDef.enableLimit = true;
+            jointDef.lowerAngle = -.1
+            jointDef.upperAngle = .1
+            world.CreateJoint(jointDef);
+
             clickedPoint = null;
+            clickedBody = null;
         }
     }
 });
