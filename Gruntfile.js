@@ -82,7 +82,7 @@ module.exports = function (grunt) {
     });
  
     grunt.registerTask('default', ['connect', 'open', 'watch']);
-    grunt.registerTask('dist', ['wiredep', 'useminPrepare', 'copy', 'concat', 'usemin']);
+    grunt.registerTask('dist', ['wiredep', 'useminPrepare', 'copy', 'concat', 'uglify', 'usemin']);
  
 }
 
