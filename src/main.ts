@@ -70,7 +70,7 @@ for(var i = 0; i < 35; i++) {
     // bodyDef.position.Set(Math.random() * canvas.width / DRAW_SCALE, Math.random() * canvas.height / DRAW_SCALE);
     // bodyDef.position = new b2Vec2(Math.random() * canvas.width / DRAW_SCALE, 0);
     bodyDef.position.Set(Math.random() * 20, Math.random() * 20);
-    bodyDef.linearDamping = 0.9;
+    bodyDef.linearDamping = 9;
     var body = world.CreateBody(bodyDef);
     body.CreateFixture(fixDef);
     particles.push(body);
@@ -88,6 +88,9 @@ function update(timestamp) {
             var subtree = findSubtreeOf(joint.GetBodyB());
             clickables = clickables.filter((clickable) => {
                 return subtree.indexOf(clickable) === -1;
+            });
+            subtree.forEach((tree) => {
+                tree.dead = true;
             });
             world.DestroyJoint(joint);
         }
@@ -125,10 +128,12 @@ function update(timestamp) {
     var treeAABB;
 
     branches.forEach((branch) => {
-        if(treeAABB == null) {
-            treeAABB = branch.GetFixtureList().GetAABB();
-        } else {
-            treeAABB = b2AABB.Combine(treeAABB, branch.GetFixtureList().GetAABB());
+        if(!branch.dead) {
+            if(treeAABB == null) {
+                treeAABB = branch.GetFixtureList().GetAABB();
+            } else {
+                treeAABB = b2AABB.Combine(treeAABB, branch.GetFixtureList().GetAABB());
+            }
         }
         var angle: number = branch.GetAngle();
         var position: b2Vec2 = branch.GetWorldCenter();
@@ -304,3 +309,23 @@ function findSubtreeOf(body: any) {
     trees.push(body);
     return trees;
 }
+
+var audioContext = new ((<any>window).AudioContext || (<any>window).webkitAudioContext)();
+var bufferSize = 4096;
+var brownNoise = (function() {
+    var lastOut = 0.0;
+    var node = audioContext.createScriptProcessor(bufferSize, 1, 1);
+    node.onaudioprocess = function(e) {
+        var output = e.outputBuffer.getChannelData(0);
+        for (var i = 0; i < bufferSize; i++) {
+            var white = Math.random() * 2 - 1;
+            output[i] = (lastOut + (0.02 * white)) / 1.02;
+            lastOut = output[i];
+            output[i] *= 3.5; // (roughly) compensate for gain
+            output[i] *= Math.min(windVec.Length(), 1);
+        }
+    }
+    return node;
+})();
+
+brownNoise.connect(audioContext.destination);
