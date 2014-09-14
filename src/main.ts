@@ -48,7 +48,7 @@ var bodyDef = new b2BodyDef;
 bodyDef.type = b2Body.b2_staticBody;
 fixDef.shape = new b2PolygonShape;
 fixDef.shape.SetAsBox(100, 2);
-bodyDef.position.Set(50, 800 / 30);
+bodyDef.position.Set(50, canvas.height / 30 + 1);
 var floor = world.CreateBody(bodyDef);
 floor.CreateFixture(fixDef);
 
