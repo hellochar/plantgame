@@ -32,23 +32,20 @@ bodyDef.position.Set(50, 800 / 30);
 var floor = world.CreateBody(bodyDef);
 floor.CreateFixture(fixDef);
 
-//create a seed
-bodyDef.type = b2Body.b2_staticBody;
-fixDef.shape = new b2CircleShape(.3);
-
-bodyDef.position.x = canvas.width / 2 / 30
-bodyDef.position.y = 800 / 30 - 2;
-var seed = world.CreateBody(bodyDef);
-seed.CreateFixture(fixDef);
-clickables.push(seed);
+var rootStart = new b2Vec2(canvas.width / 2 / 30, 800 / 30 - 2);
+var rootOffset = new b2Vec2(0, -150 / 30);
+var root = createBranch(rootStart, rootOffset, true);
+clickables.push(root);
 
 function update(timestamp) {
     joints.forEach((joint) => {
-        // console.log(joint);
-        joint.SetMaxMotorTorque(10 + 1000 * Math.abs(joint.GetJointAngle()));
-        // debugger
+        var angle = joint.GetJointAngle();
+        joint.SetMaxMotorTorque(10 + 100 * Math.abs(angle));
+        if(angle > Math.PI/2) {
+            // break
+            world.DestroyJoint(joint);
+        }
     });
-    console.log(joints.map((joint) => joint.GetJointAngle()));
     world.Step(1/60, 3, 3);
     world.DrawDebugData();
 
@@ -103,24 +100,7 @@ $(document).on("click", (e) => {
         var offset = maybeGetOffset();
         if(offset) {
             console.log("creating tree between ", clickedPoint, "and ", mouseWorldVec);
-            var midpoint = new b2Vec2((clickedPoint.x + mouseWorldVec.x) / 2,
-                                      (clickedPoint.y + mouseWorldVec.y) / 2);
-            var length = offset.Length();
-            var bodyDef = new b2BodyDef;
-            var fixDef = new b2FixtureDef;
-            fixDef.density = 1.0;
-            fixDef.friction = 0.5;
-            fixDef.restitution = 0.2;
-
-            bodyDef.type = b2Body.b2_dynamicBody;
-            bodyDef.position.SetV(midpoint);
-            bodyDef.angle = Math.atan2(offset.y, offset.x);
-            fixDef.shape = new b2PolygonShape;
-            fixDef.shape.SetAsBox(length/2, length/20);
-
-            var body = world.CreateBody(bodyDef);
-            body.CreateFixture(fixDef);
-            clickables.push(body);
+            var body = createBranch(clickedPoint, offset);
 
             var jointDef = new b2Joints.b2RevoluteJointDef;
             jointDef.Initialize(clickedBody, body, clickedPoint);
@@ -143,6 +123,28 @@ $(document).on("click", (e) => {
         }
     }
 });
+
+function createBranch(start: b2Vec2, offset: b2Vec2, staticBody: boolean = false) {
+    var midpoint = new b2Vec2(start.x + offset.x / 2,
+                              start.y + offset.y / 2);
+    var length = offset.Length();
+    var bodyDef = new b2BodyDef;
+    var fixDef = new b2FixtureDef;
+    fixDef.density = 1.0;
+    fixDef.friction = 0.5;
+    fixDef.restitution = 0.2;
+
+    bodyDef.type = staticBody ? b2Body.b2_staticBody : b2Body.b2_dynamicBody;
+    bodyDef.position.SetV(midpoint);
+    bodyDef.angle = Math.atan2(offset.y, offset.x);
+    fixDef.shape = new b2PolygonShape;
+    fixDef.shape.SetAsBox(length/2, length/20);
+
+    var body = world.CreateBody(bodyDef);
+    body.CreateFixture(fixDef);
+    clickables.push(body);
+    return body;
+}
 
 function maybeGetOffset(): b2Vec2 {
     if(clickedPoint != null) {
